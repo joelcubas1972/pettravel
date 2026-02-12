@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="PetTravelDocs" default="debug" basedir=".">
+
+    <!-- ===========================
+         PROPIEDADES DEL PROYECTO
+         =========================== -->
+    <property name="src.dir" value="src"/>
+    <property name="web.dir" value="web"/>
+    <property name="build.dir" value="build"/>
+    <property name="build.classes.dir" value="${build.dir}/classes"/>
+    <property name="build.web.dir" value="${build.dir}/web"/>
+    <property name="dist.dir" value="dist"/>
+    <property name="tomcat.home" value="C:/apache-tomcat-11.0.6"/>
+    <property name="browser.cmd" value="C:/Program Files/Mozilla Firefox/firefox.exe"/>
+
+    <!-- ===========================
+         CLASSPATH
+         =========================== -->
+    <path id="classpath">
+        <fileset dir="${web.dir}/WEB-INF/lib" includes="**/*.jar"/>
+        <fileset dir="${tomcat.home}/lib" includes="*.jar"/>
+    </path>
+
+    <!-- ===========================
+         CLEAN
+         =========================== -->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+    </target>
+
+    <!-- ===========================
+         COMPILAR JAVA
+         =========================== -->
+    <target name="compile" depends="clean">
+        <mkdir dir="${build.classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}"
+               classpathref="classpath"
+               includeantruntime="false"
+               source="17" target="17"
+               encoding="UTF-8">
+            <compilerarg value="-parameters"/>
+        </javac>
+    </target>
+
+    <!-- ===========================
+         COPIAR RECURSOS WEB
+         =========================== -->
+    <target name="copy-resources" depends="compile">
+        <mkdir dir="${build.web.dir}"/>
+        
+        <!-- Copiar TODO EXCEPTO WEB-INF/web.xml -->
+        <copy todir="${build.web.dir}">
+            <fileset dir="${web.dir}">
+                <exclude name="WEB-INF/web.xml"/>
+            </fileset>
+        </copy>
+        
+        <!-- Copiar clases compiladas -->
+        <copy todir="${build.web.dir}/WEB-INF/classes">
+            <fileset dir="${build.classes.dir}"/>
+        </copy>
+        
+        <!-- Copiar librerías -->
+        <copy todir="${build.web.dir}/WEB-INF/lib">
+            <fileset dir="${web.dir}/WEB-INF/lib"/>
+        </copy>
+        
+        <!-- Copiar archivo web.xml por separado -->
+        <copy file="${web.dir}/WEB-INF/web.xml" 
+              tofile="${build.web.dir}/WEB-INF/web.xml"/>
+    </target>
+
+    <!-- ===========================
+         GENERAR WAR
+         =========================== -->
+    <target name="war" depends="copy-resources">
+        <mkdir dir="${dist.dir}"/>
+        <war destfile="${dist.dir}/PetTravelDocs.war" webxml="${build.web.dir}/WEB-INF/web.xml">
+            <fileset dir="${build.web.dir}"/>
+        </war>
+        <echo message="✅ WAR generado: PetTravelDocs.war"/>
+    </target>
+
+    <!-- ===========================
+         POST-DIST: copiar WAR a Tomcat
+         =========================== -->
+    <target name="post-dist" depends="war">
+        <copy file="${dist.dir}/PetTravelDocs.war" 
+              todir="${tomcat.home}/webapps" 
+              overwrite="true"/>
+    </target>
+
+    <!-- ===========================
+         DIST: depende de war y post-dist
+         =========================== -->
+    <target name="dist" depends="war,post-dist">
+        <echo message="✅ WAR listo en ${dist.dir} y copiado a Tomcat"/>
+    </target>
+
+    <!-- ===========================
+         DEPLOY MANUAL
+         =========================== -->
+    <target name="deploy" depends="dist">
+        <echo message="📁 WAR copiado a Tomcat"/>
+    </target>
+
+    <!-- ===========================
+         DEPLOY RÁPIDO: STOP + COPY + START
+         =========================== -->
+    <target name="quick-deploy" depends="war">
+        <echo message="⏹ Deteniendo Tomcat..."/>
+        <exec executable="${tomcat.home}/bin/shutdown.bat" osfamily="windows"/>
+        <exec executable="${tomcat.home}/bin/shutdown.sh" osfamily="unix"/>
+        <sleep seconds="3"/>
+        <echo message="📁 Copiando WAR a Tomcat..."/>
+        <copy file="${dist.dir}/PetTravelDocs.war" 
+              todir="${tomcat.home}/webapps" 
+              overwrite="true"/>
+        <echo message="🚀 Iniciando Tomcat..."/>
+        <exec executable="${tomcat.home}/bin/startup.bat" osfamily="windows"/>
+        <exec executable="${tomcat.home}/bin/startup.sh" osfamily="unix"/>
+    </target>
+
+    <!-- ===========================
+         ABRIR NAVEGADOR
+         =========================== -->
+    <target name="open-browser">
+        <exec executable="${browser.cmd}">
+            <arg value="http://localhost:8080/PetTravelDocs/"/>
+        </exec>
+    </target>
+
+    <!-- ===========================
+         RUN: SOLO COMPILAR Y COPIAR
+         =========================== -->
+    <target name="run" depends="war">
+        <echo message="✅ Proyecto compilado y empaquetado."/>
+        <echo message="🌐 Abriendo navegador..."/>
+        <exec executable="${browser.cmd}">
+            <arg value="http://localhost:8080/PetTravelDocs/"/>
+        </exec>
+    </target>
+
+    <!-- ===========================
+         DEBUG: TODO EN UNO
+         =========================== -->
+    <target name="debug" depends="quick-deploy,open-browser">
+        <echo message="✅ Proyecto desplegado, Tomcat iniciado y navegador abierto."/>
+    </target>
+
+    <!-- ===========================
+         COMPILE ONLY: Solo compilar
+         =========================== -->
+    <target name="compile-only">
+        <mkdir dir="${build.classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}"
+               classpathref="classpath"
+               includeantruntime="false"
+               source="17" target="17"
+               encoding="UTF-8">
+            <compilerarg value="-parameters"/>
+        </javac>
+        <echo message="✅ Compilación completada"/>
+    </target>
+
+    <!-- ===========================
+         CLEAN & BUILD: Limpiar y construir sin desplegar
+         =========================== -->
+    <target name="clean-build" depends="clean,compile,copy-resources,war">
+        <echo message="✅ Proyecto limpiado y construido exitosamente"/>
+    </target>
+
+    <!-- ===========================
+         TEST: Solo compilar y abrir navegador
+         =========================== -->
+    <target name="test" depends="clean-build,open-browser">
+        <echo message="✅ Proyecto construido y navegador abierto"/>
+    </target>
+
+    <!-- ===========================
+         REBUILD: Alias para clean-build
+         =========================== -->
+    <target name="rebuild" depends="clean-build">
+        <echo message="✅ Rebuild completado"/>
+    </target>
+
+</project>
