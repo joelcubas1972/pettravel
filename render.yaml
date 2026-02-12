@@ -1,6 +1,6 @@
 services:
   - type: web
     name: pet-travel-docs
-    env: java
+    env: docker
     buildCommand: ant clean dist
     startCommand: java -jar lib/webapp-runner.jar --port $PORT dist/*.war
