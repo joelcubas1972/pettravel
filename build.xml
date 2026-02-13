@@ -6,7 +6,7 @@
          =========================== -->
     <property name="src.dir" value="src"/>
     <property name="web.dir" value="web"/>
-    <property name="webapp.dir" value="Webapp"/>
+    <property name="webpages.dir" value="Web Pages"/>
     <property name="build.dir" value="build"/>
     <property name="build.classes.dir" value="${build.dir}/classes"/>
     <property name="build.web.dir" value="${build.dir}/web"/>
@@ -57,13 +57,13 @@
             </fileset>
         </copy>
         
-        <!-- 2. COPIAR WEB-INF/web.xml ESPECÍFICAMENTE -->
+        <!-- 2. COPIAR WEB-INF/web.xml -->
         <copy file="${web.dir}/WEB-INF/web.xml" 
               tofile="${build.web.dir}/WEB-INF/web.xml"/>
         
-        <!-- 3. COPIAR CARPETA Webapp/ COMPLETA (AQUÍ ESTÁN TUS LOGOS Y JS) -->
+        <!-- 3. COPIAR CARPETA Web Pages COMPLETA (CON ESPACIOS) -->
         <copy todir="${build.web.dir}">
-            <fileset dir="${webapp.dir}">
+            <fileset dir="${webpages.dir}">
                 <include name="**/*"/>
             </fileset>
         </copy>
@@ -78,7 +78,7 @@
             <fileset dir="${web.dir}/WEB-INF/lib"/>
         </copy>
         
-        <echo message="✅ Recursos web copiados (incluyendo Webapp/ completa)"/>
+        <echo message="✅ Recursos web copiados (incluyendo Web Pages/)"/>
     </target>
 
     <!-- ===========================
