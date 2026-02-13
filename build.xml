@@ -6,27 +6,17 @@
          =========================== -->
     <property name="src.dir" value="src"/>
     <property name="web.dir" value="web"/>
+    <property name="webapp.dir" value="Webapp"/>
     <property name="build.dir" value="build"/>
     <property name="build.classes.dir" value="${build.dir}/classes"/>
     <property name="build.web.dir" value="${build.dir}/web"/>
     <property name="dist.dir" value="dist"/>
-    
-    <!-- Detectar si estamos en Render -->
-    <condition property="render.env" value="true">
-        <isset property="RENDER"/>
-    </condition>
 
     <!-- ===========================
          CLASSPATH
          =========================== -->
     <path id="classpath">
         <fileset dir="${web.dir}/WEB-INF/lib" includes="**/*.jar"/>
-        <!-- Solo incluir Tomcat si NO estamos en Render -->
-        <fileset dir="${tomcat.home}/lib" includes="*.jar" erroronmissingdir="true">
-            <not>
-                <isset property="render.env"/>
-            </not>
-        </fileset>
     </path>
 
     <!-- ===========================
@@ -55,31 +45,40 @@
     </target>
 
     <!-- ===========================
-         COPIAR RECURSOS WEB
+         COPIAR RECURSOS WEB (CORREGIDO)
          =========================== -->
     <target name="copy-resources" depends="compile">
         <mkdir dir="${build.web.dir}"/>
         
-        <!-- Copiar TODO EXCEPTO WEB-INF/web.xml -->
+        <!-- 1. COPIAR TODO DE LA CARPETA web/ -->
         <copy todir="${build.web.dir}">
             <fileset dir="${web.dir}">
                 <exclude name="WEB-INF/web.xml"/>
             </fileset>
         </copy>
         
-        <!-- Copiar clases compiladas -->
+        <!-- 2. COPIAR WEB-INF/web.xml ESPECÍFICAMENTE -->
+        <copy file="${web.dir}/WEB-INF/web.xml" 
+              tofile="${build.web.dir}/WEB-INF/web.xml"/>
+        
+        <!-- 3. COPIAR CARPETA Webapp/ COMPLETA (AQUÍ ESTÁN TUS LOGOS Y JS) -->
+        <copy todir="${build.web.dir}">
+            <fileset dir="${webapp.dir}">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+        
+        <!-- 4. COPIAR CLASES COMPILADAS -->
         <copy todir="${build.web.dir}/WEB-INF/classes">
             <fileset dir="${build.classes.dir}"/>
         </copy>
         
-        <!-- Copiar librerías -->
+        <!-- 5. COPIAR LIBRERÍAS -->
         <copy todir="${build.web.dir}/WEB-INF/lib">
             <fileset dir="${web.dir}/WEB-INF/lib"/>
         </copy>
         
-        <!-- Copiar archivo web.xml por separado -->
-        <copy file="${web.dir}/WEB-INF/web.xml" 
-              tofile="${build.web.dir}/WEB-INF/web.xml"/>
+        <echo message="✅ Recursos web copiados (incluyendo Webapp/ completa)"/>
     </target>
 
     <!-- ===========================
@@ -98,43 +97,6 @@
          =========================== -->
     <target name="dist" depends="war">
         <echo message="✅ Build completado"/>
-    </target>
-
-    <!-- ===========================
-         TAREAS SOLO PARA LOCAL
-         =========================== -->
-    <target name="local-deploy" depends="dist" unless="render.env">
-        <property name="tomcat.home" value="C:/apache-tomcat-11.0.6"/>
-        <copy file="${dist.dir}/PetTravelDocs.war" 
-              todir="${tomcat.home}/webapps" 
-              overwrite="true"/>
-        <echo message="✅ WAR copiado a Tomcat local"/>
-    </target>
-
-    <target name="quick-deploy" depends="war" unless="render.env">
-        <property name="tomcat.home" value="C:/apache-tomcat-11.0.6"/>
-        <echo message="⏹ Deteniendo Tomcat..."/>
-        <exec executable="${tomcat.home}/bin/shutdown.bat" osfamily="windows"/>
-        <exec executable="${tomcat.home}/bin/shutdown.sh" osfamily="unix"/>
-        <sleep seconds="3"/>
-        <echo message="📁 Copiando WAR a Tomcat..."/>
-        <copy file="${dist.dir}/PetTravelDocs.war" 
-              todir="${tomcat.home}/webapps" 
-              overwrite="true"/>
-        <echo message="🚀 Iniciando Tomcat..."/>
-        <exec executable="${tomcat.home}/bin/startup.bat" osfamily="windows"/>
-        <exec executable="${tomcat.home}/bin/startup.sh" osfamily="unix"/>
-    </target>
-
-    <!-- ===========================
-         DEBUG (SOLO LOCAL)
-         =========================== -->
-    <target name="debug" depends="quick-deploy" unless="render.env">
-        <property name="browser.cmd" value="C:/Program Files/Mozilla Firefox/firefox.exe"/>
-        <exec executable="${browser.cmd}">
-            <arg value="http://localhost:8080/PetTravelDocs/"/>
-        </exec>
-        <echo message="✅ Proyecto desplegado localmente"/>
     </target>
 
 </project>
