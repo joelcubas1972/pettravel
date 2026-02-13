@@ -310,7 +310,7 @@ const CountryFormLoader = {
         }
         script = document.createElement('script');
         script.id = scriptId;
-        script.src = '/PetTravelDocs/js/country-requirements/countries/' + fileName + '.js';
+        script.src = (window.contextPath || '') + '/js/country-requirements/countries/' + fileName + '.js';
         script.async = true;
         script.defer = true;
         script.onload = () => {
