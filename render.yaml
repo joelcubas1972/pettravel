@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: pet-travel-docs
+    name: pet-travel
     runtime: image
     plan: free
     buildCommand: ant dist
