@@ -2,8 +2,5 @@ services:
   - type: web
     name: pet-travel-joelcubas
     runtime: image
-    image:
-      url: tomcat:10.1.28-jdk17
     plan: free
-    buildCommand: ant dist
-    startCommand: java -jar webapp-runner.jar --port $PORT dist/PetTravelDocs.war
+    dockerfilePath: ./Dockerfile
