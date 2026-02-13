@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: pet-travel
+    name: pet-travel-joelcubas
     runtime: image
     image:
       url: tomcat:10.1.28-jdk17
