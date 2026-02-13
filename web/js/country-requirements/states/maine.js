@@ -4,8 +4,7 @@ const MainePetTravelForm = {
     acceptsDigitalSignature: false, 
     daysBeforeTravelForForm: null, 
     airlineModelRequirements: ["APHIS 7001"],
-   
-    isRabbitQuarantineArea: false, // No information found.
+    isRabbitQuarantineArea: false, 
     requirements: [
         {
             id: "import_permit_me_pets",
