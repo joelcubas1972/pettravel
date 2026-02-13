@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: pet-travel-joelcubas
+    name: pet-travel
     env: java
     plan: free
     buildCommand: ant dist
