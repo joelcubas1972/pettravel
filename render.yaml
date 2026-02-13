@@ -1,7 +1,7 @@
 services:
   - type: web
     name: pet-travel
-    env: java
+    runtime: tomcat
     plan: free
     buildCommand: ant dist
     startCommand: java -jar webapp-runner.jar --port $PORT dist/PetTravelDocs.war
