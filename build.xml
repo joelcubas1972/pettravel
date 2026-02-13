@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="PetTravelDocs" default="debug" basedir=".">
+<project name="PetTravelDocs" default="dist" basedir=".">
 
     <!-- ===========================
          PROPIEDADES DEL PROYECTO
@@ -10,15 +10,23 @@
     <property name="build.classes.dir" value="${build.dir}/classes"/>
     <property name="build.web.dir" value="${build.dir}/web"/>
     <property name="dist.dir" value="dist"/>
-    <property name="tomcat.home" value="C:/apache-tomcat-11.0.6"/>
-    <property name="browser.cmd" value="C:/Program Files/Mozilla Firefox/firefox.exe"/>
+    
+    <!-- Detectar si estamos en Render -->
+    <condition property="render.env" value="true">
+        <isset property="RENDER"/>
+    </condition>
 
     <!-- ===========================
          CLASSPATH
          =========================== -->
     <path id="classpath">
         <fileset dir="${web.dir}/WEB-INF/lib" includes="**/*.jar"/>
-        <fileset dir="${tomcat.home}/lib" includes="*.jar"/>
+        <!-- Solo incluir Tomcat si NO estamos en Render -->
+        <fileset dir="${tomcat.home}/lib" includes="*.jar" erroronmissingdir="true">
+            <not>
+                <isset property="render.env"/>
+            </not>
+        </fileset>
     </path>
 
     <!-- ===========================
@@ -43,6 +51,7 @@
                encoding="UTF-8">
             <compilerarg value="-parameters"/>
         </javac>
+        <echo message="✅ Compilación completada"/>
     </target>
 
     <!-- ===========================
@@ -85,32 +94,25 @@
     </target>
 
     <!-- ===========================
-         POST-DIST: copiar WAR a Tomcat
+         DIST - TAREA PRINCIPAL
          =========================== -->
-    <target name="post-dist" depends="war">
+    <target name="dist" depends="war">
+        <echo message="✅ Build completado"/>
+    </target>
+
+    <!-- ===========================
+         TAREAS SOLO PARA LOCAL
+         =========================== -->
+    <target name="local-deploy" depends="dist" unless="render.env">
+        <property name="tomcat.home" value="C:/apache-tomcat-11.0.6"/>
         <copy file="${dist.dir}/PetTravelDocs.war" 
               todir="${tomcat.home}/webapps" 
               overwrite="true"/>
+        <echo message="✅ WAR copiado a Tomcat local"/>
     </target>
 
-    <!-- ===========================
-         DIST: depende de war y post-dist
-         =========================== -->
-    <target name="dist" depends="war,post-dist">
-        <echo message="✅ WAR listo en ${dist.dir} y copiado a Tomcat"/>
-    </target>
-
-    <!-- ===========================
-         DEPLOY MANUAL
-         =========================== -->
-    <target name="deploy" depends="dist">
-        <echo message="📁 WAR copiado a Tomcat"/>
-    </target>
-
-    <!-- ===========================
-         DEPLOY RÁPIDO: STOP + COPY + START
-         =========================== -->
-    <target name="quick-deploy" depends="war">
+    <target name="quick-deploy" depends="war" unless="render.env">
+        <property name="tomcat.home" value="C:/apache-tomcat-11.0.6"/>
         <echo message="⏹ Deteniendo Tomcat..."/>
         <exec executable="${tomcat.home}/bin/shutdown.bat" osfamily="windows"/>
         <exec executable="${tomcat.home}/bin/shutdown.sh" osfamily="unix"/>
@@ -125,66 +127,14 @@
     </target>
 
     <!-- ===========================
-         ABRIR NAVEGADOR
+         DEBUG (SOLO LOCAL)
          =========================== -->
-    <target name="open-browser">
+    <target name="debug" depends="quick-deploy" unless="render.env">
+        <property name="browser.cmd" value="C:/Program Files/Mozilla Firefox/firefox.exe"/>
         <exec executable="${browser.cmd}">
             <arg value="http://localhost:8080/PetTravelDocs/"/>
         </exec>
-    </target>
-
-    <!-- ===========================
-         RUN: SOLO COMPILAR Y COPIAR
-         =========================== -->
-    <target name="run" depends="war">
-        <echo message="✅ Proyecto compilado y empaquetado."/>
-        <echo message="🌐 Abriendo navegador..."/>
-        <exec executable="${browser.cmd}">
-            <arg value="http://localhost:8080/PetTravelDocs/"/>
-        </exec>
-    </target>
-
-    <!-- ===========================
-         DEBUG: TODO EN UNO
-         =========================== -->
-    <target name="debug" depends="quick-deploy,open-browser">
-        <echo message="✅ Proyecto desplegado, Tomcat iniciado y navegador abierto."/>
-    </target>
-
-    <!-- ===========================
-         COMPILE ONLY: Solo compilar
-         =========================== -->
-    <target name="compile-only">
-        <mkdir dir="${build.classes.dir}"/>
-        <javac srcdir="${src.dir}" destdir="${build.classes.dir}"
-               classpathref="classpath"
-               includeantruntime="false"
-               source="17" target="17"
-               encoding="UTF-8">
-            <compilerarg value="-parameters"/>
-        </javac>
-        <echo message="✅ Compilación completada"/>
-    </target>
-
-    <!-- ===========================
-         CLEAN & BUILD: Limpiar y construir sin desplegar
-         =========================== -->
-    <target name="clean-build" depends="clean,compile,copy-resources,war">
-        <echo message="✅ Proyecto limpiado y construido exitosamente"/>
-    </target>
-
-    <!-- ===========================
-         TEST: Solo compilar y abrir navegador
-         =========================== -->
-    <target name="test" depends="clean-build,open-browser">
-        <echo message="✅ Proyecto construido y navegador abierto"/>
-    </target>
-
-    <!-- ===========================
-         REBUILD: Alias para clean-build
-         =========================== -->
-    <target name="rebuild" depends="clean-build">
-        <echo message="✅ Rebuild completado"/>
+        <echo message="✅ Proyecto desplegado localmente"/>
     </target>
 
 </project>

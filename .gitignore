@@ -1,0 +1,30 @@
+# Archivos compilados
+build/
+dist/
+*.class
+*.war
+*.jar
+
+# Archivos de proyecto
+.settings/
+.classpath
+.project
+*.iml
+*.idea
+*.vscode
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+*.log
+*.lock
+
+# Archivos locales (NO SUBIR)
+web/WEB-INF/lib/servlet-api.jar
+tomcat/
+logs/
+
+# Archivos temporales
+*.tmp
+*.temp
+*~

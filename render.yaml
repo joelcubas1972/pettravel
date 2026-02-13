@@ -1,5 +1,12 @@
 services:
   - type: web
     name: pet-travel-docs
-    env: docker
+    runtime: image
     plan: free
+    buildCommand: ant dist
+    startCommand: java -jar webapp-runner.jar --port $PORT dist/PetTravelDocs.war
+    envVars:
+      - key: RENDER
+        value: true
+      - key: JAVA_VERSION
+        value: 17
