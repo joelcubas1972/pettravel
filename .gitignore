@@ -12,6 +12,7 @@ dist/
 *.iml
 *.idea
 *.vscode
+nbproject/private/
 
 # Archivos de sistema
 .DS_Store
@@ -28,3 +29,12 @@ logs/
 *.tmp
 *.temp
 *~
+
+# BACKUPS (lo que te estaba ensuciando el repo)
+*.backup
+backup*/
+backup_*/
+
+# Otros
+ter
+build.xml.backup
