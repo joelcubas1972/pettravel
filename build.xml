@@ -6,7 +6,6 @@
          =========================== -->
     <property name="src.dir" value="src"/>
     <property name="web.dir" value="web"/>
-    <property name="webpages.dir" value="Web Pages"/>
     <property name="build.dir" value="build"/>
     <property name="build.classes.dir" value="${build.dir}/classes"/>
     <property name="build.web.dir" value="${build.dir}/web"/>
@@ -40,45 +39,39 @@
                source="17" target="17"
                encoding="UTF-8">
             <compilerarg value="-parameters"/>
-        </javac>
+
+</javac>
         <echo message="✅ Compilación completada"/>
     </target>
 
     <!-- ===========================
-         COPIAR RECURSOS WEB (CORREGIDO)
+         COPIAR RECURSOS WEB (CORREGIDO - SIN WEB PAGES)
          =========================== -->
     <target name="copy-resources" depends="compile">
         <mkdir dir="${build.web.dir}"/>
         
-        <!-- 1. COPIAR TODO DE LA CARPETA web/ -->
+        <!-- COPIAR TODO DE LA CARPETA web/ (AQUÍ YA ESTÁ TODO) -->
         <copy todir="${build.web.dir}">
             <fileset dir="${web.dir}">
                 <exclude name="WEB-INF/web.xml"/>
             </fileset>
         </copy>
         
-        <!-- 2. COPIAR WEB-INF/web.xml -->
+        <!-- COPIAR WEB-INF/web.xml -->
         <copy file="${web.dir}/WEB-INF/web.xml" 
               tofile="${build.web.dir}/WEB-INF/web.xml"/>
         
-        <!-- 3. COPIAR CARPETA Web Pages COMPLETA (CON ESPACIOS) -->
-        <copy todir="${build.web.dir}">
-            <fileset dir="${webpages.dir}">
-                <include name="**/*"/>
-            </fileset>
-        </copy>
-        
-        <!-- 4. COPIAR CLASES COMPILADAS -->
+        <!-- COPIAR CLASES COMPILADAS -->
         <copy todir="${build.web.dir}/WEB-INF/classes">
             <fileset dir="${build.classes.dir}"/>
         </copy>
         
-        <!-- 5. COPIAR LIBRERÍAS -->
+        <!-- COPIAR LIBRERÍAS -->
         <copy todir="${build.web.dir}/WEB-INF/lib">
             <fileset dir="${web.dir}/WEB-INF/lib"/>
         </copy>
         
-        <echo message="✅ Recursos web copiados (incluyendo Web Pages/)"/>
+        <echo message="✅ Recursos web copiados desde /web"/>
     </target>
 
     <!-- ===========================

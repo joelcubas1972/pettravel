@@ -1583,10 +1583,10 @@
     </div>
 </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="${pageContext.request.contextPath}/js/country-requirements/country-codes.js"></script>
+    <script src="${pageContext.request.contextPath}/js/petTravelDB.js"></script>
     <script src="${pageContext.request.contextPath}/js/country-requirements/country-requirements-db.js"></script>
     <script src="${pageContext.request.contextPath}/js/form-handler.js"></script>
-    <script> window.contextPath = "${pageContext.request.contextPath}";</script>
+    <!--<script> window.contextPath = "${pageContext.request.contextPath}";</script> -->
     <script>
         let petCount = 1;        
         function getCountryVariableName(countryCode) {
@@ -3917,14 +3917,13 @@
                                 petAddedCount++;
                                 totalAdded++;
 
-                                console.log(`Agregado al presupuesto: ${reqName} para ${petName}`);
                             }
                         }
                     }
                 });
 
                 if (petAddedCount > 0) {
-                    console.log(`${petAddedCount} requisitos agregados para ${petName}`);
+
                 }
             }
 

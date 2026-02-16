@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="PetTravelDocs" default="dist" basedir=".">
+
+    <!-- ===========================
+         PROPIEDADES DEL PROYECTO
+         =========================== -->
+    <property name="src.dir" value="src"/>
+    <property name="web.dir" value="web"/>
+    <property name="webpages.dir" value="Web Pages"/>
+    <property name="build.dir" value="build"/>
+    <property name="build.classes.dir" value="${build.dir}/classes"/>
+    <property name="build.web.dir" value="${build.dir}/web"/>
+    <property name="dist.dir" value="dist"/>
+
+    <!-- ===========================
+         CLASSPATH
+         =========================== -->
+    <path id="classpath">
+        <fileset dir="${web.dir}/WEB-INF/lib" includes="**/*.jar"/>
+    </path>
+
+    <!-- ===========================
+         CLEAN
+         =========================== -->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+    </target>
+
+    <!-- ===========================
+         COMPILAR JAVA
+         =========================== -->
+    <target name="compile" depends="clean">
+        <mkdir dir="${build.classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}"
+               classpathref="classpath"
+               includeantruntime="false"
+               source="17" target="17"
+               encoding="UTF-8">
+            <compilerarg value="-parameters"/>
+        </javac>
+        <echo message="✅ Compilación completada"/>
+    </target>
+
+    <!-- ===========================
+         COPIAR RECURSOS WEB (CORREGIDO)
+         =========================== -->
+    <target name="copy-resources" depends="compile">
+        <mkdir dir="${build.web.dir}"/>
+        
+        <!-- 1. COPIAR TODO DE LA CARPETA web/ -->
+        <copy todir="${build.web.dir}">
+            <fileset dir="${web.dir}">
+                <exclude name="WEB-INF/web.xml"/>
+            </fileset>
+        </copy>
+        
+        <!-- 2. COPIAR WEB-INF/web.xml -->
+        <copy file="${web.dir}/WEB-INF/web.xml" 
+              tofile="${build.web.dir}/WEB-INF/web.xml"/>
+        
+        <!-- 3. COPIAR CARPETA Web Pages COMPLETA (CON ESPACIOS) -->
+        <copy todir="${build.web.dir}">
+            <fileset dir="${webpages.dir}">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+        
+        <!-- 4. COPIAR CLASES COMPILADAS -->
+        <copy todir="${build.web.dir}/WEB-INF/classes">
+            <fileset dir="${build.classes.dir}"/>
+        </copy>
+        
+        <!-- 5. COPIAR LIBRERÍAS -->
+        <copy todir="${build.web.dir}/WEB-INF/lib">
+            <fileset dir="${web.dir}/WEB-INF/lib"/>
+        </copy>
+        
+        <echo message="✅ Recursos web copiados (incluyendo Web Pages/)"/>
+    </target>
+
+    <!-- ===========================
+         GENERAR WAR
+         =========================== -->
+    <target name="war" depends="copy-resources">
+        <mkdir dir="${dist.dir}"/>
+        <war destfile="${dist.dir}/PetTravelDocs.war" webxml="${build.web.dir}/WEB-INF/web.xml">
+            <fileset dir="${build.web.dir}"/>
+        </war>
+        <echo message="✅ WAR generado: PetTravelDocs.war"/>
+    </target>
+
+    <!-- ===========================
+         DIST - TAREA PRINCIPAL
+         =========================== -->
+    <target name="dist" depends="war">
+        <echo message="✅ Build completado"/>
+    </target>
+
+</project>
