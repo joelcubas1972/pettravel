@@ -310,7 +310,9 @@ const CountryFormLoader = {
         }
         script = document.createElement('script');
         script.id = scriptId;
-        script.src = (window.contextPath || '') + '/js/country-requirements/countries/' + fileName + '.js';
+        const isRender = window.location.hostname.includes('onrender.com');
+        const basePath = isRender ? '' : '/PetTravelDocs';
+        script.src = basePath + '/js/country-requirements/countries/' + fileName + '.js';  
         script.async = true;
         script.defer = true;
         script.onload = () => {
