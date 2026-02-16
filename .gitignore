@@ -1,9 +1,11 @@
 # Archivos compilados
 build/
-dist/
 *.class
-*.war
 *.jar
+
+# Dist: ignorar todo excepto el WAR específico
+dist/*
+!dist/PetTravelDocs.war
 
 # Archivos de proyecto
 .settings/
